@@ -10,26 +10,28 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.Switch
+import com.example.tp3_p1.databinding.ActivityMainBinding
 import kotlin.random.Random
 
 class MainActivity : AppCompatActivity(), ActionMode.Callback {
-    val setTimeButton: Button by lazy { findViewById(R.id.setTimeBtn) }
-    val digitalSwitch: Switch by lazy { findViewById(R.id.digitalSwitch) }
-
+    private lateinit var binding: ActivityMainBinding
     private lateinit var actionMode: ActionMode
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        setTimeButton.setOnClickListener { view -> this.setTime(view) }
+        binding = ActivityMainBinding.inflate(layoutInflater)
+
+        setContentView(binding.root)
+
+        binding.setTimeBtn.setOnClickListener { view -> this.setTime(view) }
 
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment, FragmentClock(),null)
             .addToBackStack(null)
             .commit()
 
-        setTimeButton.setOnLongClickListener {
+        binding.setTimeBtn.setOnLongClickListener {
             actionMode = this@MainActivity.startActionMode(this@MainActivity)!!
             return@setOnLongClickListener true
         }
@@ -44,7 +46,7 @@ class MainActivity : AppCompatActivity(), ActionMode.Callback {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId == R.id.action_switch)
         {
-            digitalSwitch.isChecked = !digitalSwitch.isChecked
+            binding.digitalSwitch.isChecked = !binding.digitalSwitch.isChecked
             setTime(null)
         }
         return super.onOptionsItemSelected(item)
@@ -55,7 +57,7 @@ class MainActivity : AppCompatActivity(), ActionMode.Callback {
         var transaction = fragmentManager.beginTransaction()
         var fragmentClock = FragmentClock()
         var bundle = Bundle()
-        bundle.putBoolean("digitalOK", digitalSwitch.isChecked)
+        bundle.putBoolean("digitalOK", binding.digitalSwitch.isChecked)
         fragmentClock.arguments = bundle
         transaction.replace(R.id.fragment, fragmentClock)
         transaction.commit()
@@ -74,7 +76,7 @@ class MainActivity : AppCompatActivity(), ActionMode.Callback {
     override fun onActionItemClicked(actionMode: ActionMode?, menuItem: MenuItem?): Boolean {
         return when (menuItem?.itemId) {
             R.id.action_color -> {
-                setTimeButton.setBackgroundColor(this.getRandomColor())
+                binding.setTimeBtn.setBackgroundColor(this.getRandomColor())
                 actionMode?.finish()
                 true
             }
